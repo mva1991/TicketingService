@@ -1,6 +1,7 @@
 package com.reservation;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -10,11 +11,10 @@ public class Test {
 		// TODO Auto-generated method stub
 		
 
-		Map <Integer, Integer> map = new TreeMap<Integer, Integer>();
-		map.put(1,1);
-		map.put(2, 2);
-		Integer[] arr =  map.keySet().toArray(new Integer[0]);
-		System.out.println(arr.length);
+		Calendar cal = Calendar.getInstance();
+		System.out.println(cal.getTime().toString());
+		cal.add(Calendar.SECOND, 5);
+		System.out.println(cal.getTime().toString());
 		
 
 	}

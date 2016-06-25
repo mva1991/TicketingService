@@ -2,7 +2,7 @@ package com.reservation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -42,7 +42,11 @@ public class SeatAllocationService {
 			ArrayList<Integer> reservedSeatNumbers = new ArrayList<Integer>(Arrays.asList(arr));
 			int currentRowSize = rowProfile.getFreeSeats() + rowProfile.getTakenSeats().size();
 			int availableSeatCount = entry.getValue().getFreeSeats();
-			ArrayList<Seat> freeSeatsArray = getSeatsInARow(reservedSeatNumbers,availableSeatCount,currentRowSize,rowName,levelName,userEmail);
+			ArrayList<Seat> freeSeatsArray = new ArrayList<Seat>();
+			if(availableSeatCount < numSeats)
+				freeSeatsArray = getSeatsInARow(reservedSeatNumbers,availableSeatCount,currentRowSize,rowName,levelName,userEmail);
+			else
+				freeSeatsArray = getSeatsInARow(reservedSeatNumbers,numSeats,currentRowSize,rowName,levelName,userEmail);
 			reservableSeats.addAll(freeSeatsArray);
 			
 		}
@@ -68,7 +72,7 @@ public class SeatAllocationService {
 			TreeMap<String,RowProfile> currentRowProfileMap = currentLevelProfile.getRowProfileMap();
 			String seatRow = reserveableSeat.getRow();
 			RowProfile currentRowProfile = currentRowProfileMap.get(seatRow);
-			int updatedFreeCountInRow = currentLevelProfile.getFreeSeats() - 1;
+			int updatedFreeCountInRow = currentRowProfile.getFreeSeats() - 1;
 			currentRowProfile.setFreeSeats(updatedFreeCountInRow);
 			
 			/*
@@ -115,8 +119,9 @@ public class SeatAllocationService {
 		
 		if(size == 0){
 			for (int i = 1; i <= numSeats; i++){
-				Date date = new Date();
-				Seat seat = encapsulateSeatInformation(userEmail, i, rowName, levelName, date);
+				Calendar endTime = Calendar.getInstance();
+				endTime.add(Calendar.SECOND, DataLoader.ticketHoldTimeOut);
+				Seat seat = encapsulateSeatInformation(userEmail, i, rowName, levelName, endTime);
 				freeSeatArray.add(seat);
 			}
 			
@@ -185,8 +190,9 @@ public class SeatAllocationService {
 		
 		
 		for(Integer seatNumber : seatNumberArray){
-			Date date = new Date();
-			Seat seat = encapsulateSeatInformation(userEmail, seatNumber, rowName, levelName, date);
+			Calendar endTime = Calendar.getInstance();
+			endTime.add(Calendar.SECOND, DataLoader.ticketHoldTimeOut);
+			Seat seat = encapsulateSeatInformation(userEmail, seatNumber, rowName, levelName, endTime);
 			freeSeatArray.add(seat);
 		}
 		
@@ -202,7 +208,7 @@ public class SeatAllocationService {
 	 * @param endTime
 	 * @return Seat
 	 */
-	public static Seat encapsulateSeatInformation(String userEmail, Integer seatNumber, String row, String level, Date endTime){
+	public static Seat encapsulateSeatInformation(String userEmail, Integer seatNumber, String row, String level, Calendar endTime){
 		Seat seat = new Seat();
 		seat.setUserEmail(userEmail);
 		seat.setEndTime(endTime);

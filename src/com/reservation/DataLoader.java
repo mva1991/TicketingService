@@ -10,7 +10,7 @@ public class DataLoader {
 
 	public static Map<String, LevelProfile> levelProfileMap = new HashMap<String , LevelProfile>();
 	public static Queue<Seat> blockedSeatsQueue = new LinkedList<Seat>();
-
+	public static int ticketHoldTimeOut = 25;
 	
 	private static String[] alpha = {"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"};
 	public static void buildVenue()

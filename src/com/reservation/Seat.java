@@ -1,6 +1,6 @@
 package com.reservation;
 
-import java.util.Date;
+import java.util.Calendar;
 
 
 
@@ -10,7 +10,7 @@ public class Seat {
 	private String row;
 	private Integer seatNumber;
 	private String userEmail;
-	private Date endTime;
+	private Calendar endTime;
 	public String getLevel() {
 		return level;
 	}
@@ -35,10 +35,10 @@ public class Seat {
 	public void setUserEmail(String userEmail) {
 		this.userEmail = userEmail;
 	}
-	public Date getEndTime() {
+	public Calendar getEndTime() {
 		return endTime;
 	}
-	public void setEndTime(Date endTime) {
+	public void setEndTime(Calendar endTime) {
 		this.endTime = endTime;
 	}
 	

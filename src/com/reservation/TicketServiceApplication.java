@@ -1,24 +1,31 @@
 package com.reservation;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class TicketServiceApplication implements TicketService {
 
 	private static Map<Integer , String> levelNameMap = new HashMap<Integer , String>();
 	
+	/*
+	 * This static block will perform the following tasks:
+	 * 1. Build the venue based on the #rows and #seats for every level.
+	 * 2. Invoke blockedSeatPruner thread that executes once in every five seconds to free up the blocked seats
+	 */
 	static 
-	{   
+	{   		
 		DataLoader.buildVenue();
 		levelNameMap.put(1, "Orchestra");
 		levelNameMap.put(2, "Main");
 		levelNameMap.put(3, "Balcony 1");
 		levelNameMap.put(4, "Balcony 2");	
+		blockedSeatPruner();
 	}
 	
 	static Map<String,LevelProfile> venueSiteMap = DataLoader.levelProfileMap;
@@ -38,10 +45,11 @@ public class TicketServiceApplication implements TicketService {
 	}
 
 	@Override
-	public SeatHold findAndHoldSeats(int numSeats, Integer minLevel,
+	public ArrayList<Seat> findAndHoldSeats(int numSeats, Integer minLevel,
 			Integer maxLevel, String customerEmail) {
 		// TODO Auto-generated method stub
 		Integer totalFree = getTotalFreeSeatsInTheVenue();
+		ArrayList<Seat> blockedSeatsArray = new ArrayList<Seat>();
 		if(totalFree < numSeats){
 			System.out.println("Cannot reserve "+numSeats+" as the hall is full. Only "+totalFree+" seats are available");
 			return null;
@@ -53,8 +61,8 @@ public class TicketServiceApplication implements TicketService {
 				maxLevel = temp;
 			}
 			
-			ArrayList<Seat> blockedSeatsArray = new ArrayList<Seat>();
-			/**
+			
+			/*
 			 * Allocate all the seats in the same level if possible.
 			 */
 			for (int i = minLevel; i<=maxLevel; i++){				
@@ -67,29 +75,26 @@ public class TicketServiceApplication implements TicketService {
 
 				}				
 			}
-			/**
+			/*
 			 * If all the seats could not be allocated in the same level - Sparsely allocate the seats in different levels
-			 * Allocate all seats in a given level and move to the next level till the total number of seats required are full.
+			 * Allocate all seats in a given level and move to the next level till the total number of seats required are blocked.
 			 */
-			
-			for(int i = minLevel; i <=maxLevel; i++){
-				if(numSeats == blockedSeatsArray.size()) break;
-				String levelName = levelNameMap.get(i);
-				LevelProfile levelProfile = venueSiteMap.get(levelName);
-				int seatsInLevel = levelProfile.getFreeSeats();
-				SeatAllocationService sas = new SeatAllocationService();
-				ArrayList<Seat> tempreservableSeats = sas.seatAllocator(levelProfile, seatsInLevel, customerEmail, levelName);
-				blockedSeatsArray.addAll(tempreservableSeats);
-
-				
+			if(numSeats != blockedSeatsArray.size()){
+				for(int i = minLevel; i <=maxLevel; i++){
+					if(numSeats == blockedSeatsArray.size()) break;
+					String levelName = levelNameMap.get(i);
+					LevelProfile levelProfile = venueSiteMap.get(levelName);
+					int seatsInLevel = levelProfile.getFreeSeats();
+					SeatAllocationService sas = new SeatAllocationService();
+					ArrayList<Seat> tempreservableSeats = sas.seatAllocator(levelProfile, seatsInLevel, customerEmail, levelName);
+					blockedSeatsArray.addAll(tempreservableSeats);}
 			}
+
 			
-			/**
-			 * 
-			 */
+
 		}
 		
-		return null;
+		return blockedSeatsArray;
 	}
 
 	@Override
@@ -103,7 +108,7 @@ public class TicketServiceApplication implements TicketService {
 		mySeat.setRow("A");
 		mySeat.setLevel("Orchestra");
 		mySeat.setUserEmail("mva1991@gmail.com");
-		mySeat.setEndTime(new Date());
+		
 		
 		Map<String,RowProfile> rowProfileMap = new TreeMap<String, RowProfile>();
 		LevelProfile lp =  venueSiteMap.get("Orchestra");
@@ -126,6 +131,55 @@ public class TicketServiceApplication implements TicketService {
 		return totalSeats;
 		
 	}
+	
+/**
+ * The runnable thread in the blockedSeatPruner performs the following tasks if the 
+ * blockedSeatsQueue is not empty.
+ * 1. Peak the Queue and get the first seat in the queue
+ * 2. If that seat's end time equals the current time or if its greater than the current time
+ * 3. Remove the seat from the queue
+ * 4. Increment the totalFreeSeats at in the corresponding level and row.
+ * 5. Remove the seat from takenSeats map of the seat's corresponding row 
+ */
+		 
+	public static void blockedSeatPruner(){
+		
+		final Runnable runnableThread = new Runnable(){
 
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				if(DataLoader.blockedSeatsQueue.size() >0){
+					Seat seat = DataLoader.blockedSeatsQueue.peek();
+					Calendar currentCal = Calendar.getInstance();
+					Calendar seatCal = seat.getEndTime();
+					if(seatCal.equals(currentCal) || seatCal.after(currentCal)){
+						DataLoader.blockedSeatsQueue.poll();
+						String levelName = seat.getLevel();
+						LevelProfile lvlProf = venueSiteMap.get(levelName);
+						int freeSeatsInTheLevel = lvlProf.getFreeSeats();
+						freeSeatsInTheLevel += 1;
+						lvlProf.setFreeSeats(freeSeatsInTheLevel);
+						Map<String,RowProfile> rowProfileMap = lvlProf.getRowProfileMap();
+						String rowName = seat.getRow();
+						RowProfile rowProfile = rowProfileMap.get(rowName);
+						int freeSeatsInTheRow = rowProfile.getFreeSeats();
+						freeSeatsInTheRow += 1;
+						rowProfile.setFreeSeats(freeSeatsInTheRow);
+						Map<Integer, Seat> takenSeats = rowProfile.getTakenSeats();
+						int unblockedSeatNumber = seat.getSeatNumber();
+						takenSeats.remove(unblockedSeatNumber);
+					}					
+				}
+			
+			}
+			
+		};
+		
+	ScheduledExecutorService sched = Executors.newScheduledThreadPool(1);
+	sched.scheduleAtFixedRate(runnableThread, 0, 5, TimeUnit.SECONDS);
+	}
+	
+	
 
 }
