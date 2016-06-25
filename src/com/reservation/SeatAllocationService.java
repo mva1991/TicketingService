@@ -112,11 +112,11 @@ public class SeatAllocationService {
 		 * 3. If the free seats spawn through out the row in an unordered fashion
 		 * The beginning of each condition is clearly commented below */
 		
-		/*
-		 * Condition-1: If all free seats are in between the any two reserved seats
-		 */
+
 		int size = seatNumberList.size();
-		
+		/*
+		 * If the seatNumberList is empty - Start allocating seats from seat no 1
+		 */
 		if(size == 0){
 			for (int i = 1; i <= numSeats; i++){
 				Calendar endTime = Calendar.getInstance();
@@ -127,6 +127,11 @@ public class SeatAllocationService {
 			
 			return freeSeatArray;
 		}
+		
+		/*
+		 * Condition-1: If all free seats are in between the any two reserved seats
+		 */
+		
 		for(int i = 0; i< size; i++){			
 			if(i < size -1){
 				int neighborDifference = (seatNumberList.get(i+1) - seatNumberList.get(i))-1;

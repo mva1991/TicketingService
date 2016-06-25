@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -40,7 +39,7 @@ public class TicketServiceApplication implements TicketService {
             LevelProfile lp = DataLoader.levelProfileMap.get(levelName);
             freeSeats = lp.getFreeSeats();
             
-		}
+		} else freeSeats = getTotalFreeSeatsInTheVenue();
 		return freeSeats;
 	}
 
@@ -97,32 +96,6 @@ public class TicketServiceApplication implements TicketService {
 		return blockedSeatsArray;
 	}
 
-	@Override
-	public String reserveSeats(Seat seat, String customerEmail) {
-		// TODO Auto-generated method stub
-		/**
-		 *  This part only for testing
-		 */
-		Seat mySeat = new Seat();
-		mySeat.setSeatNumber(1);
-		mySeat.setRow("A");
-		mySeat.setLevel("Orchestra");
-		mySeat.setUserEmail("mva1991@gmail.com");
-		
-		
-		Map<String,RowProfile> rowProfileMap = new TreeMap<String, RowProfile>();
-		LevelProfile lp =  venueSiteMap.get("Orchestra");
-		rowProfileMap = lp.getRowProfileMap();
-		RowProfile rp = rowProfileMap.get("A");
-		Integer freeSeats = rp.getFreeSeats();
-		freeSeats = freeSeats - 1; 
-		Map<Integer,Seat> seatMap = rp.getTakenSeats();
-		seatMap.put(1,mySeat);
-		rp.setFreeSeats(freeSeats);
-		lp.setFreeSeats(lp.getFreeSeats() - 1);		
-		return "Seat Reserved";
-	}
-	
 	public Integer getTotalFreeSeatsInTheVenue(){
 		Integer totalSeats = venueSiteMap.get("Orchestra").getFreeSeats()+
 		 venueSiteMap.get("Main").getFreeSeats()+
@@ -132,18 +105,27 @@ public class TicketServiceApplication implements TicketService {
 		
 	}
 	
-/**
- * The runnable thread in the blockedSeatPruner performs the following tasks if the 
- * blockedSeatsQueue is not empty.
- * 1. Peak the Queue and get the first seat in the queue
- * 2. If that seat's end time equals the current time or if its greater than the current time
- * 3. Remove the seat from the queue
- * 4. Increment the totalFreeSeats at in the corresponding level and row.
- * 5. Remove the seat from takenSeats map of the seat's corresponding row 
- */
-		 
-	public static void blockedSeatPruner(){
+	@Override
+	public  void reserveSeats(int numSeats, String customerEmail) {
+		// TODO Auto-generated method stub
+		/*
+		 *  Once the seats are opted for reservation, They can be removed from the 
+		 *  blockedSeatsQueue
+		 */
+		for(int i = 1; i<= numSeats; i++){
+			 DataLoader.blockedSeatsQueue.poll();			
+		}
 		
+	}
+		 
+	private static void blockedSeatPruner(){
+		/*
+		 * The runnable thread in the blockedSeatPruner performs the following tasks if the 
+		 * blockedSeatsQueue is not empty.
+		 * 1. Peak the Queue and get the first seat in the queue
+		 * 2. If that seat's end time equals the current time or if its greater than the current time
+		 * 3. Remove the seat from the queue
+		 */		
 		final Runnable runnableThread = new Runnable(){
 
 			@Override
@@ -155,20 +137,7 @@ public class TicketServiceApplication implements TicketService {
 					Calendar seatCal = seat.getEndTime();
 					if(seatCal.equals(currentCal) || seatCal.after(currentCal)){
 						DataLoader.blockedSeatsQueue.poll();
-						String levelName = seat.getLevel();
-						LevelProfile lvlProf = venueSiteMap.get(levelName);
-						int freeSeatsInTheLevel = lvlProf.getFreeSeats();
-						freeSeatsInTheLevel += 1;
-						lvlProf.setFreeSeats(freeSeatsInTheLevel);
-						Map<String,RowProfile> rowProfileMap = lvlProf.getRowProfileMap();
-						String rowName = seat.getRow();
-						RowProfile rowProfile = rowProfileMap.get(rowName);
-						int freeSeatsInTheRow = rowProfile.getFreeSeats();
-						freeSeatsInTheRow += 1;
-						rowProfile.setFreeSeats(freeSeatsInTheRow);
-						Map<Integer, Seat> takenSeats = rowProfile.getTakenSeats();
-						int unblockedSeatNumber = seat.getSeatNumber();
-						takenSeats.remove(unblockedSeatNumber);
+						unblockSeat(seat);
 					}					
 				}
 			
@@ -178,6 +147,32 @@ public class TicketServiceApplication implements TicketService {
 		
 	ScheduledExecutorService sched = Executors.newScheduledThreadPool(1);
 	sched.scheduleAtFixedRate(runnableThread, 0, 5, TimeUnit.SECONDS);
+	}
+	
+	/**
+	 * 
+	 * @param seat
+	 * 
+	 */
+	public static void unblockSeat(Seat seat){
+		/*
+		 * 1. Increment the totalFreeSeats at in the corresponding level and row
+		 * 2. Remove the seat from takenSeats map of the seat's corresponding row 
+		 */
+		String levelName = seat.getLevel();
+		LevelProfile lvlProf = venueSiteMap.get(levelName);
+		int freeSeatsInTheLevel = lvlProf.getFreeSeats();
+		freeSeatsInTheLevel += 1;
+		lvlProf.setFreeSeats(freeSeatsInTheLevel);
+		Map<String,RowProfile> rowProfileMap = lvlProf.getRowProfileMap();
+		String rowName = seat.getRow();
+		RowProfile rowProfile = rowProfileMap.get(rowName);
+		int freeSeatsInTheRow = rowProfile.getFreeSeats();
+		freeSeatsInTheRow += 1;
+		rowProfile.setFreeSeats(freeSeatsInTheRow);
+		Map<Integer, Seat> takenSeats = rowProfile.getTakenSeats();
+		int unblockedSeatNumber = seat.getSeatNumber();
+		takenSeats.remove(unblockedSeatNumber);
 	}
 	
 	
