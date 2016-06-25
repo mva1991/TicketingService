@@ -26,7 +26,7 @@ public class DataLoader {
 		rowProfile.setFreeSeats(50);
 		rowProfileMap.put(rowName, rowProfile);
 		}
-		
+		orchProfile.setPricePerSeat(100);
 		orchProfile.setRowProfileMap(rowProfileMap);
 		levelProfileMap.put("Orchestra" , orchProfile);
 		
@@ -41,7 +41,7 @@ public class DataLoader {
 			rowProfile.setFreeSeats(100);
 			rowProfileMap.put(rowName, rowProfile);
 		}
-		
+		mainProfile.setPricePerSeat(75);
 		mainProfile.setRowProfileMap(rowProfileMap);
 		levelProfileMap.put("Main" , mainProfile);
 		
@@ -56,7 +56,7 @@ public class DataLoader {
 			rowProfile.setFreeSeats(100);
 			rowProfileMap.put(rowName, rowProfile);
 		}
-		
+		bal1Profile.setPricePerSeat(50);
 		bal1Profile.setRowProfileMap(rowProfileMap);
 		levelProfileMap.put("Balcony 1" , bal1Profile);
 		
@@ -71,7 +71,7 @@ public class DataLoader {
 			rowProfile.setFreeSeats(100);
 			rowProfileMap.put(rowName, rowProfile);
 		}
-		
+		bal2Profile.setPricePerSeat(40);
 		bal2Profile.setRowProfileMap(rowProfileMap);
 		levelProfileMap.put("Balcony 2" , bal2Profile);
 		

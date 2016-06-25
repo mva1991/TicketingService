@@ -6,6 +6,8 @@ public class LevelProfile {
 
 	private Integer freeSeats;
 	private TreeMap<String, RowProfile> rowProfileMap;
+	private Integer pricePerSeat;
+	
 	public Integer getFreeSeats() {
 		return freeSeats;
 	}
@@ -18,5 +20,12 @@ public class LevelProfile {
 	public void setRowProfileMap(TreeMap<String, RowProfile> rowProfileMap) {
 		this.rowProfileMap = rowProfileMap;
 	}
+	public Integer getPricePerSeat() {
+		return pricePerSeat;
+	}
+	public void setPricePerSeat(Integer pricePerSeat) {
+		this.pricePerSeat = pricePerSeat;
+	}
+	
 	
 }

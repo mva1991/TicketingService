@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 public class TicketServiceApplication implements TicketService {
 
-	private static Map<Integer , String> levelNameMap = new HashMap<Integer , String>();
+	public static Map<Integer , String> levelNameMap = new HashMap<Integer , String>();
 	
 	/*
 	 * This static block will perform the following tasks:
