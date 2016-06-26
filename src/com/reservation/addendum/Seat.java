@@ -1,11 +1,17 @@
-package com.reservation;
+package com.reservation.addendum;
+
+import java.util.Calendar;
+
+
 
 public class Seat {
 	
 	private String level;
 	private String row;
 	private Integer seatNumber;
-	private String userEmail;	
+	private String userEmail;
+	private Calendar endTime;
+	private String status;
 	public String getLevel() {
 		return level;
 	}
@@ -30,8 +36,18 @@ public class Seat {
 	public void setUserEmail(String userEmail) {
 		this.userEmail = userEmail;
 	}
-
-
+	public Calendar getEndTime() {
+		return endTime;
+	}
+	public void setEndTime(Calendar endTime) {
+		this.endTime = endTime;
+	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
 	
 	
 

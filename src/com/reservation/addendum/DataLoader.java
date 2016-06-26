@@ -1,4 +1,4 @@
-package com.reservation;
+package com.reservation.addendum;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -17,32 +17,30 @@ public class DataLoader {
 
 	public static Map<String, LevelProfile> levelProfileMap = new HashMap<String , LevelProfile>();
 	public static Queue<Seat> blockedSeatsQueue = new LinkedList<Seat>();
-	public static int seatHoldDuration = 5000;
+	public static int ticketHoldTimeOut = 25;
 	
 	private static String[] alpha = {"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"};
 
 	public static void buildVenue()
 	{
 		/*
-		 * The initial configuration (#Rows per level, #Seats per level, #price per seat, ticketHold duration) is taken from a properties file - venue.properties.
-		 * This is to make it easier to change the parameters with out rebuilding the source code.
+		 * The initial configuration (#Rows per level, #Seats per level, #price per seat) is taken from a properties file - venue.properties.
+		 * This is to make it easier to change the #Seats,#Rows,Price/Seat with out rebuilding the source code.
 		 * buildVenue() will extract the information from the properties file and sets up the following:
 		 * 1. LevelProfile per level -> Number of free seats in every level - At the time of initialization free seats = total seats
 		 * 2. RowProfile is an enumeration of freeSeats in the row and takenSeats Map.
 		 * 3. rowProfileMap for each level -> size of the map = number of rows.
-		 * 4. seatHoldDuration.
 		 */
 		try {
 			
 			Properties venueProperties = new Properties();
 			InputStream input = new FileInputStream("venue.properties");
 			venueProperties.load(input);
-			seatHoldDuration = getInt((venueProperties.get("seatHoldDuration").toString()));
+			
 			int orchRows = getInt((venueProperties.get("orchestraRows").toString()));
 			int orchRowSeats = getInt((venueProperties.get("orchestraRowSeats").toString()));
 			int orchSeatPrice = getInt((venueProperties.get("orchestraSeatPrice").toString()));
 			int orchSeats = orchRows * orchRowSeats;
-			
 			
 			LevelProfile orchProfile = new LevelProfile();
 			orchProfile.setFreeSeats(orchSeats);			
