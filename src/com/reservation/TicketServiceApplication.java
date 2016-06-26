@@ -207,7 +207,7 @@ public class TicketServiceApplication implements TicketService {
 		}
 		
 		if(freeSeatCount < numSeats){
-			throw new Exception("Cannot find "+numSeats+" free seats in the preferred levels. Please change your min-max levels of preference");
+			throw new Exception("Cannot find "+numSeats+" free seats in the preferred levels. Please change your min-max levels of preference.");
 		}
 		
 	}
