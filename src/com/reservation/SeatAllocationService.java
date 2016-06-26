@@ -81,7 +81,6 @@ public class SeatAllocationService {
 		ArrayList<Seat> freeSeatArray = new ArrayList<Seat>();
 		/* Intent is to derive all seats in a continuous order. */
 		
-
 		int size = seatNumberList.size();
 		/*
 		 * If the seatNumberList is empty - Start allocating seats from seat no 1
@@ -90,8 +89,7 @@ public class SeatAllocationService {
 			for (int i = 1; i <= numSeats; i++){
 				Seat seat = encapsulateSeatInformation(userEmail, i, rowName, levelName);
 				freeSeatArray.add(seat);
-			}
-			
+			}			
 			return freeSeatArray;
 		}else{			
 				for(int i = 1; i <= rowSize;  i++){
@@ -100,23 +98,16 @@ public class SeatAllocationService {
 							seatNumberArray.add(i);
 						}
 					}else break;
-				}
-			
+				}		
 		}
-		
-
-
 		
 		/*
 		 * Generating an ArrayList<Seat> with all the information - We return this ArrayList from this method
-		 */
-		
-		
+		 */		
 		for(Integer seatNumber : seatNumberArray){
 			Seat seat = encapsulateSeatInformation(userEmail, seatNumber, rowName, levelName);
 			freeSeatArray.add(seat);
-		}
-		
+		}		
 		return freeSeatArray;
 	}
 	
