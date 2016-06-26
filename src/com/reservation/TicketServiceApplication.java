@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 
 public class TicketServiceApplication implements TicketService {
 
-	public static Map<Integer , String> levelNameMap = new HashMap<Integer , String>();
+	public static Map<Integer , String> levelNameMap = new HashMap<Integer , String>(); // used to map each level to a unique integer
 	
 	/*
 	 * This static block builds the venue based on the #rows and #seats for every level.
