@@ -24,7 +24,11 @@ Errors and Validations:
 	7. Cannot find "+numSeats+" free seats in the preferred levels. Please change your min-max levels of preference.
 	8. Input could not correspond to a number
 
+Disadvantages of this approach and mitigation
 
+	1. Since there is no disk based storage - The application state cannot be preserved over restarts.
+	2. Concurrent access of multiple users is not supported as the application is a stand alone java program and there is no application server.
+	Under these eventualities - An application server and a disk based storage can facilitate better usage of the application's core functionality.
 	
 Sample success output: 
 	
