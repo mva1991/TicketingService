@@ -7,7 +7,7 @@ Instructions to execute the application:
 Principles:
 
 	1. This application uses Map<K,V> as the key data structure to persist the venue/seat availability information.
-	2. A hierarchical structure defining the relation between Level -> Row -> Seat  is built at the start up.
+	2. An object oriented hierarchical structure defining the relation between Level -> Row -> Seat  is built at the start up.
 	3. This application requires venue.properties file where information about the initial set up is stored.
 	4. The parameters in the venue.properties can be changed based on the user preference with caution.
 	5. Best-Seat-Picking-Strategy: Seats are allocated beginning from the level and row closest to the stage, based on the current seat availability and range of levels the user chooses at the RunTime.
