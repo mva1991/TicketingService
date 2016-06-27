@@ -29,7 +29,12 @@ Disadvantages of this approach and mitigation
 	1. Since there is no disk based storage - The application state cannot be preserved over restarts.
 	2. Concurrent access of multiple users is not supported as the application is a stand alone java program and there is no application server.
 	Under these eventualities - An application server and a disk based storage can facilitate better usage of the application's core functionality.
-	
+
+# I have added some functionality in com.reservation.addendum package - that can help handle seat allocation when there is transaction concurrency 
+# (Multiple users accessing the app at the same time). 
+# This code can be referred at the time of enhancement.
+
+
 Sample success output: 
 	
 -----------------------------------------------------------------
