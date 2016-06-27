@@ -44,11 +44,11 @@ public class App {
 			String data = scanner.next();
 			Integer numSeats = Integer.parseInt(data);
 			
-			System.out.println("\tHighest level number of preference: ");
+			System.out.println("\tHighest Level-Number of preference: ");
 			data = scanner.next();
 			Integer maxLevel = Integer.parseInt(data);
 			
-			System.out.println("\tLowest level number of preference: ");
+			System.out.println("\tLowest Level-Number of preference: ");
 			data = scanner.next();
 			Integer minLevel = Integer.parseInt(data);
 			
@@ -58,7 +58,7 @@ public class App {
 			ArrayList<Seat> blockedSeatsArray;
 			blockedSeatsArray = tsa.findAndHoldSeats(numSeats, minLevel, maxLevel, userEmail);
 			System.out.println("\nThe following seats have been blocked on your behalf.");
-			System.out.println("Please note that the block on these seats will be revoked in "+DataLoader.seatHoldDuration+" seconds.\n");
+			System.out.println("Please note that the block on these seats will be revoked in "+DataLoader.seatHoldDuration/1000+" seconds.\n");
 			showBlockedSeats(blockedSeatsArray);
 			System.out.println("\n-----------------------------------------------------------------");
 			System.out.println("\nDo you want to reserve them? (yes/no)");
@@ -84,7 +84,10 @@ public class App {
 			if (e instanceof NumberFormatException){
 				System.out.println("Oops, Could not complete the reservation. Reason: Incorrect input was entered. Please try again.");
 			}
-			else System.out.println("Oops, Could not complete the reservation. Reason: "+e.getMessage());
+			else{
+				
+					System.out.println(e.getMessage());
+			} 
 			start();
 		}
 

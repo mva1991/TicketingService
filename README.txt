@@ -59,7 +59,7 @@ mva1991@gmail.com
 -----------------------------------------------------------------
 
 The following seats have been blocked on your behalf.
-Please note that the block on these seats will be revoked in 25000 seconds.
+Please note that the block on these seats will be revoked in 25 seconds.
 
 Level : Orchestra, Row : A, Seat-Number : 1
 Level : Orchestra, Row : A, Seat-Number : 2
